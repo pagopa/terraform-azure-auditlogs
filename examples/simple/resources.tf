@@ -17,4 +17,12 @@ module "azure_auditlogs" {
   eventhub_name           = "${local.project}-evh"
   capacity                = 4
   law_name                = "${local.project}-law"
+  auto_inflate            = var.auto_inflate
+  account_replication     = var.account_replication
+  account_tier            = var.account_tier
+  access_tier             = var.access_tier
+  export_rule_name        = "${local.project}-exp"
+  table_names             = var.table_names
+  tags                    = var.tags
+  stream_job_name         = "${local.project}-job"
 }

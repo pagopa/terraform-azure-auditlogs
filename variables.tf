@@ -49,3 +49,53 @@ variable "storage_container_name" {
   type        = string
   description = "Specifies the storage account container name"
 }
+
+variable "auto_inflate" {
+  type        = bool
+  description = "Specifies if the autoscale is enabled or not for the Event hub Namespace"
+}
+
+variable "account_replication" {
+  type        = string
+  description = "Specifies the replication for the Storage account"
+}
+
+variable "account_tier" {
+  type        = string
+  description = "Specifies the account tier for the Storage account"
+}
+
+variable "access_tier" {
+  type        = string
+  description = "Specifies the access tier for the Storage account"
+}
+
+variable "export_rule_name" {
+  type        = string
+  description = "Specifies the name for the export rule"
+}
+
+variable "table_names" {
+  type        = list(any)
+  description = "Specifies the Table to be exported"
+}
+
+variable "law_exists" {
+  type        = bool
+  description = "Specifies if the log analytics already exists"
+  default     = false
+}
+
+variable "app_insight_exists" {
+  type        = bool
+  description = "Specifies if the Application Insight already exists"
+  default     = false
+}
+
+variable "tags" {
+  type = map(any)
+}
+
+variable "stream_job_name" {
+  type = string
+}
