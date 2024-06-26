@@ -25,4 +25,5 @@ module "azure_auditlogs" {
   table_names             = var.table_names
   tags                    = var.tags
   stream_job_name         = "${local.project}-job"
+  file_path               = "../../transformation_query.sql"
 }

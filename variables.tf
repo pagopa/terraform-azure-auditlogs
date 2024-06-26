@@ -99,3 +99,7 @@ variable "tags" {
 variable "stream_job_name" {
   type = string
 }
+
+variable "file_path" {
+  type = string
+}

@@ -43,6 +43,7 @@ No modules.
 | <a name="input_eventhub_name"></a> [eventhub\_name](#input\_eventhub\_name) | Specifies the EventHub Name | `string` | n/a | yes |
 | <a name="input_eventhub_namespace_name"></a> [eventhub\_namespace\_name](#input\_eventhub\_namespace\_name) | Specifies the Eventhub namespace name | `string` | n/a | yes |
 | <a name="input_export_rule_name"></a> [export\_rule\_name](#input\_export\_rule\_name) | Specifies the name for the export rule | `string` | n/a | yes |
+| <a name="input_file_path"></a> [file\_path](#input\_file\_path) | n/a | `string` | n/a | yes |
 | <a name="input_law_exists"></a> [law\_exists](#input\_law\_exists) | Specifies if the log analytics already exists | `bool` | `false` | no |
 | <a name="input_law_name"></a> [law\_name](#input\_law\_name) | Specifies the name of the Log Analytics Workspace. Changing this forces a new resource to be created. | `string` | n/a | yes |
 | <a name="input_law_sku"></a> [law\_sku](#input\_law\_sku) | Specifies the SKU for the Log Analytics Workspace | `string` | `"PerGB2018"` | no |

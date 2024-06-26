@@ -82,26 +82,7 @@ resource "azurerm_stream_analytics_job" "streamjob" {
     type = "SystemAssigned"
   }
 
-  transformation_query = <<-EOT
-  WITH records AS(
-  SELECT
-    records.arrayvalue as sig
-    FROM
-      [eventhub-stream-input] 
-                
-      CROSS APPLY GetArrayElements(records) AS records
-               
-  )
-            
-      SELECT
-      sig.*
-      INTO
-      [adltitnexportlaw-container-output]
-            
-      FROM records
-      where sig.Properties.audit='true'
-          
-        EOT
+  transformation_query = file("${var.file_path}")
 }
 resource "azurerm_eventhub_consumer_group" "evh-consumer" {
   name                = "evh-consumergroup"
