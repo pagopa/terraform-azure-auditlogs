@@ -18,6 +18,8 @@ No modules.
 | [azurerm_eventhub.adl-t-itn-evh](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub) | resource |
 | [azurerm_eventhub_consumer_group.evh-consumer](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub_consumer_group) | resource |
 | [azurerm_eventhub_namespace.adl-t-itn-evhns](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub_namespace) | resource |
+| [azurerm_kusto_cluster.cluster](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kusto_cluster) | resource |
+| [azurerm_kusto_database.database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kusto_database) | resource |
 | [azurerm_log_analytics_data_export_rule.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_data_export_rule) | resource |
 | [azurerm_log_analytics_workspace.adl_law](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) | resource |
 | [azurerm_role_assignment.role-evh](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
@@ -40,6 +42,9 @@ No modules.
 | <a name="input_appi_name"></a> [appi\_name](#input\_appi\_name) | Specifies the name for the Application Insight | `string` | n/a | yes |
 | <a name="input_auto_inflate"></a> [auto\_inflate](#input\_auto\_inflate) | Specifies if the autoscale is enabled or not for the Event hub Namespace | `bool` | n/a | yes |
 | <a name="input_capacity"></a> [capacity](#input\_capacity) | Specifies the Throughput unit for the Event Hub | `number` | n/a | yes |
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | n/a | `string` | n/a | yes |
+| <a name="input_cluster_sku"></a> [cluster\_sku](#input\_cluster\_sku) | n/a | <pre>object({<br>    name     = string,<br>    capacity = number<br>  })</pre> | n/a | yes |
+| <a name="input_db_name"></a> [db\_name](#input\_db\_name) | n/a | `string` | n/a | yes |
 | <a name="input_eventhub_name"></a> [eventhub\_name](#input\_eventhub\_name) | Specifies the EventHub Name | `string` | n/a | yes |
 | <a name="input_eventhub_namespace_name"></a> [eventhub\_namespace\_name](#input\_eventhub\_namespace\_name) | Specifies the Eventhub namespace name | `string` | n/a | yes |
 | <a name="input_export_rule_name"></a> [export\_rule\_name](#input\_export\_rule\_name) | Specifies the name for the export rule | `string` | n/a | yes |

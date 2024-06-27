@@ -155,3 +155,26 @@ resource "azurerm_role_assignment" "role-stg" {
   principal_id         = azurerm_stream_analytics_job.streamjob.identity.0.principal_id
 }
 
+resource "azurerm_kusto_cluster" "cluster" {
+  name                = var.cluster_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  sku {
+    name     = var.cluster_sku.name
+    capacity = var.cluster_sku.capacity
+  }
+  zones = ["1", "3"]
+  tags  = var.tags
+}
+
+resource "azurerm_kusto_database" "database" {
+  name                = var.db_name
+  resource_group_name = var.resource_group_name
+  location            = var.cluster_name
+  cluster_name        = azurerm_kusto_cluster.cluster.name
+
+  hot_cache_period   = "P31D"
+  soft_delete_period = "P365D"
+}
+

@@ -26,4 +26,10 @@ module "azure_auditlogs" {
   tags                    = var.tags
   stream_job_name         = "${local.project}-job"
   file_path               = "../../transformation_query.sql"
+  cluster_name            = "${local.project}-dec"
+  cluster_sku = {
+    capacity = 1,
+    name     = "Dev(No SLA)_Standard_E2a_v4"
+  }
+  db_name = "${local.project}-dec-dedb"
 }

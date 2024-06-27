@@ -103,3 +103,18 @@ variable "stream_job_name" {
 variable "file_path" {
   type = string
 }
+
+variable "cluster_sku" {
+  type = object({
+    name     = string,
+    capacity = number
+  })
+}
+
+variable "cluster_name" {
+  type = string
+}
+
+variable "db_name" {
+  type = string
+}
