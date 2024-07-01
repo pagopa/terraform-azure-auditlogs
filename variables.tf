@@ -9,35 +9,16 @@ variable "resource_group_name" {
   description = "The name of the resource group "
 }
 
-variable "application_insights" {
-  type = object({
-    id   = optional(string, ""),
-    name = optional(string, ""),
-  })
-  validation {
-    condition     = var.application_insights.id == "" && var.application_insights.name == ""
-    error_message = "You must specify id or name"
-  }
-}
-
 variable "log_analytics_workspace" {
   type = object({
-    id            = optional(string, ""),
-    name          = optional(string, ""),
-    sku           = optional(string, "PerGB2018"),
+    id            = string,
     export_tables = list(string),
   })
-  validation {
-    condition     = var.log_analytics_workspace.id == "" && var.log_analytics_workspace.name == ""
-    error_message = "You must specify id or name"
-  }
 }
 
 variable "event_hub" {
   type = object({
     namespace_name           = string,
-    capacity                 = number,
-    auto_inflate_enabled     = bool,
     maximum_throughput_units = number,
   })
 }

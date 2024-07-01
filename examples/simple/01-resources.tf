@@ -5,20 +5,55 @@ resource "azurerm_resource_group" "rg" {
   tags = var.tags
 }
 
+resource "azurerm_log_analytics_workspace" "this" {
+  name                = "${local.project}-log"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+
+  tags = var.tags
+}
+
+resource "azurerm_application_insights" "this" {
+  name                = "${local.project}-appi"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.this.id
+
+  tags = var.tags
+}
+
 module "azure_auditlogs" {
-  source                  = "../.."
-  resource_group_name     = azurerm_resource_group.rg.name
-  location                = var.location
-  storage_account         = {name = replace("${local.project}st", "-", "")}
-  event_hub               = {namespace_name ="${local.project}-evhns", capacity = 4, auto_inflate_enabled = var.auto_inflate_enabled}
-  application_insights    = {name = "${local.project}-appi"}
-  log_analytics_workspace = {name = "${local.project}-law"}
-  account_replication     = var.account_replication
-  account_tier            = var.account_tier
-  access_tier             = var.access_tier
-  export_rule_name        = "${local.project}-exp"
-  table_names             = var.table_names
-  tags                    = var.tags
-  stream_analytics_job    = {name = "${local.project}-job"}
-  data_explorer           = {name = "${local.project}-dec", sku_name = var.sku_name, sku_capacity = var.sku_capacity} 
+  source              = "../.."
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
+  storage_account = {
+    name                               = replace("${local.project}st", "-", ""),
+    immutability_policy_enabled        = false,
+    immutability_policy_retention_days = 3650,
+  }
+
+  event_hub = {
+    namespace_name           = "${local.project}-evhns",
+    maximum_throughput_units = 1
+  }
+
+  log_analytics_workspace = {
+    id            = azurerm_log_analytics_workspace.this.id,
+    export_tables = ["AppEvents"],
+  }
+
+  stream_analytics_job = {
+    name            = "${local.project}-job"
+    streaming_units = 3
+  }
+
+  data_explorer = {
+    name         = "${local.project}-dec",
+    sku_name     = "Dev(No SLA)_Standard_E2a_v4",
+    sku_capacity = 1,
+  }
+
+  tags = var.tags
 }
