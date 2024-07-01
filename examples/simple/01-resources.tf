@@ -27,8 +27,8 @@ module "azure_auditlogs" {
   file_path               = "../../transformation_query.sql"
   cluster_name            = "${local.project}-dec"
   cluster_sku = {
-    capacity = 1,
-    name     = "Dev(No SLA)_Standard_E2a_v4"
+    capacity = 2,
+    name     = "Standard_E2a_v4"
   }
   db_name = "${local.project}-dec-dedb"
 }
