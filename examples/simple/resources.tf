@@ -5,7 +5,6 @@ resource "azurerm_resource_group" "rg" {
   tags = var.tags
 }
 
-
 module "azure_auditlogs" {
   source                  = "../.."
   resource_group_name     = azurerm_resource_group.rg.name
