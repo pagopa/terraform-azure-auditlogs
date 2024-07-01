@@ -162,37 +162,37 @@ resource "azurerm_role_assignment" "stream_analytics_storage_blob_contributor" {
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
 
-# resource "azurerm_kusto_cluster" "this" {
-#   name                = var.data_explorer.name
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
+resource "azurerm_kusto_cluster" "this" {
+  name                = var.data_explorer.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
-#   sku {
-#     name     = var.data_explorer.sku_name
-#     capacity = var.data_explorer.sku_capacity
-#   }
+  sku {
+    name     = var.data_explorer.sku_name
+    capacity = var.data_explorer.sku_capacity
+  }
 
-#   identity {
-#     type = "SystemAssigned"
-#   }
+  identity {
+    type = "SystemAssigned"
+  }
 
-#   zones = ["1", "2", "3"]
+  zones = ["1", "2", "3"]
 
-#   tags = var.tags
-# }
+  tags = var.tags
+}
 
-# resource "azurerm_role_assignment" "kusto_cluster_blob_reader" {
-#   scope                = azurerm_storage_account.this.id
-#   role_definition_name = "Storage Blob Data Reader"
-#   principal_id         = azurerm_kusto_cluster.this.identity.0.principal_id
-# }
+resource "azurerm_role_assignment" "kusto_cluster_blob_reader" {
+  scope                = azurerm_storage_account.this.id
+  role_definition_name = "Storage Blob Data Reader"
+  principal_id         = azurerm_kusto_cluster.this.identity.0.principal_id
+}
 
-# resource "azurerm_kusto_database" "this" {
-#   name                = "audit-logs"
-#   resource_group_name = var.resource_group_name
-#   location            = var.location
-#   cluster_name        = azurerm_kusto_cluster.this.name
+resource "azurerm_kusto_database" "this" {
+  name                = "audit-logs"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  cluster_name        = azurerm_kusto_cluster.this.name
 
-#   hot_cache_period   = "P7D"
-#   soft_delete_period = "P30D"
-# }
+  hot_cache_period   = "P7D"
+  soft_delete_period = "P30D"
+}
