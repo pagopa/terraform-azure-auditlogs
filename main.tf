@@ -171,10 +171,9 @@ resource "azurerm_kusto_cluster" "cluster" {
 resource "azurerm_kusto_database" "database" {
   name                = var.db_name
   resource_group_name = var.resource_group_name
-  location            = var.cluster_name
+  location            = var.location
   cluster_name        = azurerm_kusto_cluster.cluster.name
 
-  hot_cache_period   = "P31D"
-  soft_delete_period = "P365D"
+  hot_cache_period   = "P7D"
+  soft_delete_period = "P30D"
 }
-
