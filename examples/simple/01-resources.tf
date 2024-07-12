@@ -28,10 +28,11 @@ module "azure_auditlogs" {
   source              = "../.."
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
+
   storage_account = {
     name                               = replace("${local.project}st", "-", ""),
     immutability_policy_enabled        = false,
-    immutability_policy_retention_days = 3650,
+    immutability_policy_retention_days = 1,
   }
 
   event_hub = {
