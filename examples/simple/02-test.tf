@@ -79,7 +79,6 @@ resource "azurerm_role_assignment" "this" {
 }
 
 resource "null_resource" "deploy" {
-
   depends_on = [ azurerm_role_assignment.this ]
 
   triggers = {
@@ -94,5 +93,4 @@ resource "null_resource" "deploy" {
       func azure functionapp publish ${self.triggers.function_name}
     EOT
   }
-
 }
