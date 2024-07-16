@@ -79,11 +79,11 @@ resource "azurerm_role_assignment" "this" {
 }
 
 resource "null_resource" "deploy" {
-  depends_on = [ azurerm_role_assignment.this ]
+  depends_on = [azurerm_role_assignment.this]
 
   triggers = {
     deploy_version = "1.1" # change me to redeploy
-    function_name = azurerm_linux_function_app.this.name
+    function_name  = azurerm_linux_function_app.this.name
   }
 
   provisioner "local-exec" {
