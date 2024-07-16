@@ -7,7 +7,8 @@ resource "azurerm_service_plan" "this" {
   os_type                  = "Linux"
   per_site_scaling_enabled = false
   zone_balancing_enabled   = false
-  tags                     = var.tags
+
+  tags = var.tags
 }
 
 resource "azurerm_storage_account" "this" {
@@ -17,6 +18,8 @@ resource "azurerm_storage_account" "this" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
   min_tls_version          = "TLS1_2"
+
+  tags = var.tags
 }
 
 resource "azurerm_linux_function_app" "this" {
@@ -70,6 +73,8 @@ resource "azurerm_linux_function_app" "this" {
       tags["hidden-link: /app-insights-resource-id"],
     ]
   }
+
+  tags = var.tags
 }
 
 resource "azurerm_role_assignment" "this" {
@@ -78,19 +83,54 @@ resource "azurerm_role_assignment" "this" {
   principal_id         = azurerm_linux_function_app.this.identity[0].principal_id
 }
 
+resource "random_id" "key" {
+  byte_length = 16
+}
+
 resource "null_resource" "deploy" {
   depends_on = [azurerm_role_assignment.this]
 
   triggers = {
-    deploy_version = "1.1" # change me to redeploy
-    function_name  = azurerm_linux_function_app.this.name
+    deploy_version      = "1.1" # change me to redeploy
+    function_name       = azurerm_linux_function_app.this.name
+    resource_group_name = azurerm_resource_group.rg.name
+    key                 = random_id.key.hex
   }
 
   provisioner "local-exec" {
     command = <<EOT
       cd function-app && \
       yarn install && \
-      func azure functionapp publish ${self.triggers.function_name}
+      func azure functionapp publish ${self.triggers.function_name} && \
+      sleep 180 && \
+      az functionapp function keys set -g ${self.triggers.resource_group_name} -n ${self.triggers.function_name} --function-name LogGenerator --key-name key --key-value ${self.triggers.key}
     EOT
+  }
+}
+
+resource "azurerm_logic_app_workflow" "this" {
+  name                = "${local.project}-trigger-logic"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  enabled             = false
+
+  tags = var.tags
+}
+
+resource "azurerm_logic_app_trigger_recurrence" "this" {
+  name         = "recurrence"
+  logic_app_id = azurerm_logic_app_workflow.this.id
+  frequency    = "Second"
+  interval     = 1
+}
+
+resource "azurerm_logic_app_action_http" "this" {
+  name         = "http"
+  logic_app_id = azurerm_logic_app_workflow.this.id
+  method       = "POST"
+  uri          = "https://${azurerm_linux_function_app.this.default_hostname}/api/LogGenerator"
+  body         = file("${path.module}/httpbody.json")
+  headers = {
+    x-functions-key = random_id.key.hex
   }
 }

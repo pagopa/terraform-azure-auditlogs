@@ -4,7 +4,7 @@ resource "azurerm_log_analytics_data_export_rule" "this" {
   name                    = each.value
   resource_group_name     = var.resource_group_name
   workspace_resource_id   = var.log_analytics_workspace.id
-  destination_resource_id = azurerm_eventhub.this.id
+  destination_resource_id = azurerm_eventhub.law.id
   table_names             = [each.value]
   enabled                 = true
 }
@@ -27,8 +27,16 @@ resource "azurerm_eventhub_namespace" "this" {
   }
 }
 
-resource "azurerm_eventhub" "this" {
-  name                = "audit-logs"
+resource "azurerm_eventhub" "law" {
+  name                = "audit-logs-law"
+  namespace_name      = azurerm_eventhub_namespace.this.name
+  resource_group_name = var.resource_group_name
+  partition_count     = 32
+  message_retention   = 7
+}
+
+resource "azurerm_eventhub" "filtered" {
+  name                = "audit-logs-filtered"
   namespace_name      = azurerm_eventhub_namespace.this.name
   resource_group_name = var.resource_group_name
   partition_count     = 32
@@ -99,10 +107,26 @@ resource "azurerm_stream_analytics_job" "this" {
   tags = var.tags
 }
 
-resource "azurerm_eventhub_consumer_group" "this" {
-  name                = "audit-logs-consumer-group"
+resource "azurerm_stream_analytics_function_javascript_udf" "this" {
+  name                      = "filteredRecords"
+  stream_analytics_job_name = azurerm_stream_analytics_job.this.name
+  resource_group_name       = var.resource_group_name
+
+  script = file("${path.module}/filteredRecords.js")
+
+  input {
+    type = "any"
+  }
+
+  output {
+    type = "any"
+  }
+}
+
+resource "azurerm_eventhub_consumer_group" "law" {
+  name                = "audit-logs-law-consumer-group"
   namespace_name      = azurerm_eventhub_namespace.this.name
-  eventhub_name       = azurerm_eventhub.this.name
+  eventhub_name       = azurerm_eventhub.law.name
   resource_group_name = var.resource_group_name
 }
 
@@ -110,8 +134,8 @@ resource "azurerm_stream_analytics_stream_input_eventhub" "this" {
   name                         = local.stream_analytics_job.input_name
   stream_analytics_job_name    = azurerm_stream_analytics_job.this.name
   resource_group_name          = var.resource_group_name
-  eventhub_consumer_group_name = azurerm_eventhub_consumer_group.this.name
-  eventhub_name                = azurerm_eventhub.this.name
+  eventhub_consumer_group_name = azurerm_eventhub_consumer_group.law.name
+  eventhub_name                = azurerm_eventhub.law.name
   servicebus_namespace         = azurerm_eventhub_namespace.this.name
   authentication_mode          = "Msi"
 
@@ -121,20 +145,18 @@ resource "azurerm_stream_analytics_stream_input_eventhub" "this" {
   }
 }
 
-resource "azurerm_stream_analytics_output_blob" "this" {
+resource "azurerm_stream_analytics_output_eventhub" "this" {
   name                      = local.stream_analytics_job.output_name
   stream_analytics_job_name = azurerm_stream_analytics_job.this.name
   resource_group_name       = var.resource_group_name
-  storage_account_name      = azurerm_storage_account.this.name
-  storage_container_name    = azurerm_storage_container.this.name
-  path_pattern              = "${azurerm_storage_container.this.name}/{date}/{datetime:HH}/{datetime:mm}"
-  date_format               = "yyyy-MM-dd"
-  time_format               = "HH"
+  eventhub_name             = azurerm_eventhub.filtered.name
+  servicebus_namespace      = azurerm_eventhub_namespace.this.name
   authentication_mode       = "Msi"
+
   serialization {
     type     = "Json"
     encoding = "UTF8"
-    format   = "LineSeparated"
+    format   = "Array"
   }
 }
 
@@ -144,9 +166,10 @@ resource "azurerm_stream_analytics_job_schedule" "this" {
 
   depends_on = [
     azurerm_stream_analytics_stream_input_eventhub.this,
-    azurerm_stream_analytics_output_blob.this,
+    azurerm_stream_analytics_output_eventhub.this,
+    azurerm_stream_analytics_function_javascript_udf.this,
     azurerm_role_assignment.stream_analytics_azure_event_hubs_data_receiver,
-    azurerm_role_assignment.stream_analytics_storage_blob_contributor,
+    azurerm_role_assignment.stream_analytics_azure_event_hubs_data_sender,
   ]
 
   lifecycle {
@@ -162,9 +185,9 @@ resource "azurerm_role_assignment" "stream_analytics_azure_event_hubs_data_recei
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
 
-resource "azurerm_role_assignment" "stream_analytics_storage_blob_contributor" {
-  scope                = azurerm_storage_account.this.id
-  role_definition_name = "Storage Blob Data Contributor"
+resource "azurerm_role_assignment" "stream_analytics_azure_event_hubs_data_sender" {
+  scope                = azurerm_eventhub.filtered.id
+  role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
 
@@ -202,3 +225,4 @@ resource "azurerm_kusto_database" "this" {
   hot_cache_period   = "P7D"
   soft_delete_period = "P30D"
 }
+
