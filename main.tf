@@ -148,6 +148,12 @@ resource "azurerm_stream_analytics_job_schedule" "this" {
     azurerm_role_assignment.stream_analytics_azure_event_hubs_data_receiver,
     azurerm_role_assignment.stream_analytics_storage_blob_contributor,
   ]
+
+  lifecycle {
+    ignore_changes = [
+      start_mode
+    ]
+  }
 }
 
 resource "azurerm_role_assignment" "stream_analytics_azure_event_hubs_data_receiver" {
