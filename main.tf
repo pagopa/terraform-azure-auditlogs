@@ -49,7 +49,7 @@ resource "azurerm_storage_account" "this" {
   location                         = var.location
   account_replication_type         = var.storage_account.account_replication_type
   account_tier                     = "Standard"
-  access_tier                      = var.storage_account.access_tier
+  access_tier                      = "Hot"
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
 
@@ -89,8 +89,8 @@ resource "azurerm_stream_analytics_job" "this" {
   sku_name                                 = "StandardV2"
   compatibility_level                      = "1.2"
   data_locale                              = "en-US"
-  events_late_arrival_max_delay_in_seconds = 5
-  events_out_of_order_max_delay_in_seconds = 5
+  events_late_arrival_max_delay_in_seconds = 864000
+  events_out_of_order_max_delay_in_seconds = 599 # from Azure UI max value is 3599, but terraform supports max 599
   events_out_of_order_policy               = "Adjust"
   output_error_policy                      = "Stop"
   streaming_units                          = var.stream_analytics_job.streaming_units

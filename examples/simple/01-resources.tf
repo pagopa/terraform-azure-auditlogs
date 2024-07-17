@@ -56,5 +56,11 @@ module "azure_auditlogs" {
     sku_capacity = 1,
   }
 
+  logic_app = {
+    name                 = "${local.project}-logic",
+    storage_account_name = "${local.project}-logic-st",
+    plan_name            = "${local.project}-logic-asp",
+  }
+
   tags = var.tags
 }

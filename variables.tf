@@ -27,7 +27,6 @@ variable "storage_account" {
   type = object({
     name                               = string,
     account_replication_type           = optional(string, "ZRS"),
-    access_tier                        = optional(string, "Hot"),
     immutability_policy_enabled        = bool,
     immutability_policy_retention_days = number,
   })
@@ -50,6 +49,15 @@ variable "data_explorer" {
     name         = string,
     sku_name     = string,
     sku_capacity = number,
+  })
+}
+
+variable "logic_app" {
+  type = object({
+    name                 = string,
+    storage_account_name = string,
+    plan_name            = string,
+    plan_size            = optional(string, "WS1"),
   })
 }
 
