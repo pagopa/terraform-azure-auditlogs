@@ -1,0 +1,8 @@
+
+# Azure Functions artifacts
+bin
+obj
+appsettings.json
+.env
+local.settings.json
+connections.json

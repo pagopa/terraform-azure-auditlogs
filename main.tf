@@ -180,7 +180,7 @@ resource "azurerm_stream_analytics_job_schedule" "this" {
 }
 
 resource "azurerm_role_assignment" "stream_analytics_azure_event_hubs_data_receiver" {
-  scope                = azurerm_eventhub_namespace.this.id
+  scope                = azurerm_eventhub.law.id
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
