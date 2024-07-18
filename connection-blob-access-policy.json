@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Web/connections/accessPolicies",
+      "apiVersion": "2016-06-01",
+      "name": "${name}",
+      "location": "${location}",
+      "properties": {
+        "principal": {
+          "type": "ActiveDirectory",
+          "identity": {
+            "objectId": "${object_id}",
+            "tenantId": "${tenant_id}"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {},
+  "resources": [
+    {
+      "apiVersion": "2016-06-01",
+      "kind": "V2",
+      "properties": {
+        "displayName": "${name}",
+        "parameterValueSet": {
+          "name": "managedIdentityAuth",
+          "values": {}
+        },
+        "customParameterValues": {},
+        "api": {
+          "name": "azureblob",
+          "displayName": "Azure Blob Storage",
+          "description": "Connect to Azure Blob Storage to store events.",
+          "iconUri": "https://connectoricons-prod.azureedge.net/u/patelronak/getmetadataforfolderfix/1.0.1704.3829/azureblob/icon.png",
+          "brandColor": "#804998",
+          "category": "Standard",
+          "id": "/subscriptions/${subscription_id}/providers/Microsoft.Web/locations/${location}/managedApis/azureblob",
+          "type": "Microsoft.Web/locations/managedApis"
+        },
+        "testLinks": [],
+        "testRequests": []
+      },
+      "id": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Web/connections/${name}",
+      "name": "${name}",
+      "type": "Microsoft.Web/connections",
+      "location": "${location}"
+    }
+  ]
+}

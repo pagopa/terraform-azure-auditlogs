@@ -67,12 +67,12 @@ resource "azurerm_role_assignment" "logic_app_storage_blob_data_contributor" {
 }
 
 resource "azurerm_resource_group_template_deployment" "logic_app_eventub_connection" {
-  name                = "eventhub-connection"
+  name                = "eventhubs"
   resource_group_name = var.resource_group_name
   tags                = var.tags
   deployment_mode     = "Incremental" # DO NOT CHANGE OTHERWISE YOU CAN ACCIDENTLY DELETE AZ RESOURCES
   template_content = templatefile("${path.module}/connection-eventhub.json", {
-    name                = "eventhub-connection",
+    name                = "eventhubs",
     resource_group_name = var.resource_group_name,
     subscription_id     = data.azurerm_subscription.current.subscription_id
     location            = var.location,
@@ -84,12 +84,42 @@ resource "azurerm_resource_group_template_deployment" "logic_app_eventub_connect
 resource "azurerm_resource_group_template_deployment" "logic_app_eventub_connection_access_policy" {
   depends_on = [ azurerm_resource_group_template_deployment.logic_app_eventub_connection ]
 
-  name                = "${azurerm_logic_app_standard.logic_app.name}-${azurerm_logic_app_standard.logic_app.identity.0.principal_id}"
+  name                = "eventhubs-access-policy"
   resource_group_name = var.resource_group_name
   tags                = var.tags
   deployment_mode     = "Incremental" # DO NOT CHANGE OTHERWISE YOU CAN ACCIDENTLY DELETE AZ RESOURCES
   template_content = templatefile("${path.module}/connection-eventhub-access-policy.json", {
-    name                = "eventhub-connection/${azurerm_logic_app_standard.logic_app.name}-${azurerm_logic_app_standard.logic_app.identity.0.principal_id}",
+    name                = "eventhubs/${azurerm_logic_app_standard.logic_app.name}-${azurerm_logic_app_standard.logic_app.identity.0.principal_id}",
+    tenant_id           = data.azurerm_subscription.current.tenant_id,
+    object_id           = azurerm_logic_app_standard.logic_app.identity.0.principal_id,
+    location            = var.location,
+    }
+  )
+}
+
+resource "azurerm_resource_group_template_deployment" "logic_app_blob_connection" {
+  name                = "azureblob"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+  deployment_mode     = "Incremental" # DO NOT CHANGE OTHERWISE YOU CAN ACCIDENTLY DELETE AZ RESOURCES
+  template_content = templatefile("${path.module}/connection-blob.json", {
+    name                = "azureblob",
+    resource_group_name = var.resource_group_name,
+    subscription_id     = data.azurerm_subscription.current.subscription_id
+    location            = var.location
+    }
+  )
+}
+
+resource "azurerm_resource_group_template_deployment" "logic_app_blob_connection_access_policy" {
+  depends_on = [ azurerm_resource_group_template_deployment.logic_app_blob_connection ]
+
+  name                = "azureblob-access-policy"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+  deployment_mode     = "Incremental" # DO NOT CHANGE OTHERWISE YOU CAN ACCIDENTLY DELETE AZ RESOURCES
+  template_content     = templatefile("${path.module}/connection-blob-access-policy.json", {
+    name                = "azureblob/${azurerm_logic_app_standard.logic_app.name}-${azurerm_logic_app_standard.logic_app.identity.0.principal_id}",
     tenant_id           = data.azurerm_subscription.current.tenant_id,
     object_id           = azurerm_logic_app_standard.logic_app.identity.0.principal_id,
     location            = var.location,
