@@ -7,6 +7,13 @@ terraform {
       version = "~>3.39"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name  = "terraform-state-rg"
+    storage_account_name = "tfinfdevopslab"
+    container_name       = "terraform-state"
+    key                  = "terraform-azure-auditlogs.b65160.terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
