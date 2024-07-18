@@ -1,3 +1,5 @@
+data "azurerm_subscription" "current" {}
+
 resource "azurerm_log_analytics_data_export_rule" "this" {
   for_each = toset(var.log_analytics_workspace.export_tables)
 

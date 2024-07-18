@@ -66,143 +66,33 @@ resource "azurerm_role_assignment" "logic_app_storage_blob_data_contributor" {
   principal_id         = azurerm_logic_app_standard.logic_app.identity.0.principal_id
 }
 
-data "azurerm_managed_api" "eventhubs" {
-  name     = "eventhubs"
-  location = var.location
-}
-
-resource "azurerm_api_connection" "eventhubs" {
-  name                = "eventhubs"
-  resource_group_name = var.resource_group_name
-  managed_api_id      = data.azurerm_managed_api.eventhubs.id
-  display_name        = "event-hub"
-
-  tags = var.tags
-}
-
-resource "azurerm_api_connection" "eventhubs_3" {
-  name                = "eventhubs-3"
-  resource_group_name = var.resource_group_name
-  managed_api_id      = data.azurerm_managed_api.eventhubs.id
-  display_name        = "event-hub-3"
-
-  parameter_values = {
-    name = "managedIdentityAuth"
-  }
-
-  tags = var.tags
-}
-
-data "azurerm_resource_group" "this" {
-  name = var.resource_group_name
-}
-
-resource "azapi_resource" "eventhubs_2" {
-  type = "Microsoft.Web/connections@2016-06-01"
-  name = "eventhubs-2"
-  location = var.location
-  parent_id = data.azurerm_resource_group.this.id
-  tags = var.tags
-  body = jsonencode({
-    properties = {
-      api = {
-        brandColor = "#c4d5ff"
-        description = "Connect to Azure Event Hubs to send and receive events."
-        displayName = "Event Hubs"
-        iconUri = "https://connectoricons-prod.azureedge.net/releases/v1.0.1694/1.0.1694.3752/eventhubs/icon.png"
-        id = "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/providers/Microsoft.Web/locations/italynorth/managedApis/eventhubs"
-        name = "eventhubs"
-        type = "Microsoft.Web/locations/managedApis"
-      }
-      displayName = "event-hub-2"
-      parameterValues = {
-        name = "managedIdentityAuth"
-      }
-    }
-  })
-}
-
-resource "azurerm_resource_group_template_deployment" "eventhubs_4" {
-  name                = "eventhubs-4"
+resource "azurerm_resource_group_template_deployment" "logic_app_eventub_connection" {
+  name                = "eventhub-connection"
   resource_group_name = var.resource_group_name
   tags                = var.tags
   deployment_mode     = "Incremental" # DO NOT CHANGE OTHERWISE YOU CAN ACCIDENTLY DELETE AZ RESOURCES
-  template_content    = <<TEMPLATE
-  {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
-    "resources": [{
-      "apiVersion": "2016-06-01",
-      "kind": "V2",
-      "properties": {
-          "displayName": "eventhubs-4",
-        "parameterValueSet": {
-            "name": "managedIdentityAuth",
-            "values": {
-                "namespaceEndpoint": {
-                    "value": "sb://adl-t-itn-b65160-evhns.servicebus.windows.net"
-                }
-            }
-        },
-          "customParameterValues": {},
-          "api": {
-            "name": "eventhubs",
-            "displayName": "Event Hubs",
-            "description": "Connect to Azure Event Hubs to send and receive events.",
-            "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1694/1.0.1694.3752/eventhubs/icon.png",
-            "brandColor": "#c4d5ff",
-            "category": "Standard",
-            "id": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/providers/Microsoft.Web/locations/italynorth/managedApis/eventhubs",
-            "type": "Microsoft.Web/locations/managedApis"
-          },
-          "testLinks": [],
-          "testRequests": []
-      },
-      "id": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/resourceGroups/adl-t-itn-b65160-rg/providers/Microsoft.Web/connections/eventhubs-4",
-      "name": "eventhubs-4",
-      "type": "Microsoft.Web/connections",
-      "location": "italynorth"
-    }]
-}
-TEMPLATE
+  template_content = templatefile("${path.module}/connection-eventhub.json", {
+    name                = "eventhub-connection",
+    resource_group_name = var.resource_group_name,
+    subscription_id     = data.azurerm_subscription.current.subscription_id
+    location            = var.location,
+    eventhub_fqdn       = "${azurerm_eventhub_namespace.this.name}.servicebus.windows.net"
+    }
+  )
 }
 
-# resource "azapi_resource" "eventhubs" {
-#   type = "Microsoft.Web/connections@2016-06-01"
-#   name = "eventhubs"
-#   location = var.location
-#   parent_id = data.azurerm_resource_group.this.id
-#   tags = var.tags
-#   body = jsonencode({
-#     properties = {
-#       api = {
-#         brandColor = "#c4d5ff"
-#         description = "Connect to Azure Event Hubs to send and receive events."
-#         displayName = "Event Hubs"
-#         iconUri = "https://connectoricons-prod.azureedge.net/releases/v1.0.1694/1.0.1694.3752/eventhubs/icon.png"
-#         id = "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/providers/Microsoft.Web/locations/italynorth/managedApis/eventhubs"
-#         name = "eventhubs"
-#         type = "Microsoft.Web/locations/managedApis"
-#       }
-#       displayName = "event-hub"
-#       parameterValues = {
-#         name = "managedIdentityAuth"
-#         values = {
-#           namespaceEndpoint = {
-#             value = "sb://adl-t-itn-b65160-evhns.servicebus.windows.net"
-#           }
-#         }
-#       }
-#     #   "parameterValueSet": {
-#     #         "name": "managedIdentityAuth",
-#     #         "values": {
-#     #             "namespaceEndpoint": {
-#     #                 "value": "sb://adl-t-itn-b65160-evhns.servicebus.windows.net"
-#     #             }
-#     #         }
-#     #     },
-#     }
-#   })
-# }
+resource "azurerm_resource_group_template_deployment" "logic_app_eventub_connection_access_policy" {
+  depends_on = [ azurerm_resource_group_template_deployment.logic_app_eventub_connection ]
+
+  name                = "${azurerm_logic_app_standard.logic_app.name}-${azurerm_logic_app_standard.logic_app.identity.0.principal_id}"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+  deployment_mode     = "Incremental" # DO NOT CHANGE OTHERWISE YOU CAN ACCIDENTLY DELETE AZ RESOURCES
+  template_content = templatefile("${path.module}/connection-eventhub-access-policy.json", {
+    name                = "eventhub-connection/${azurerm_logic_app_standard.logic_app.name}-${azurerm_logic_app_standard.logic_app.identity.0.principal_id}",
+    tenant_id           = data.azurerm_subscription.current.tenant_id,
+    object_id           = azurerm_logic_app_standard.logic_app.identity.0.principal_id,
+    location            = var.location,
+    }
+  )
+}

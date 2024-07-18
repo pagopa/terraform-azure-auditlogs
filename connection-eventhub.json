@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {},
+  "resources": [
+    {
+      "apiVersion": "2016-06-01",
+      "kind": "V2",
+      "properties": {
+        "displayName": "${name}",
+        "parameterValueSet": {
+          "name": "managedIdentityAuth",
+          "values": {
+            "namespaceEndpoint": {
+              "value": "sb://${eventhub_fqdn}"
+            }
+          }
+        },
+        "customParameterValues": {},
+        "api": {
+          "name": "eventhubs",
+          "displayName": "Event Hubs",
+          "description": "Connect to Azure Event Hubs to send and receive events.",
+          "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1694/1.0.1694.3752/eventhubs/icon.png",
+          "brandColor": "#c4d5ff",
+          "category": "Standard",
+          "id": "/subscriptions/${subscription_id}/providers/Microsoft.Web/locations/${location}/managedApis/eventhubs",
+          "type": "Microsoft.Web/locations/managedApis"
+        },
+        "testLinks": [],
+        "testRequests": []
+      },
+      "id": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Web/connections/${name}",
+      "name": "${name}",
+      "type": "Microsoft.Web/connections",
+      "location": "${location}"
+    }
+  ]
+}
