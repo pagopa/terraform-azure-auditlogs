@@ -11,7 +11,6 @@ This example is linked to this [example action](../../.github/workflows/example-
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
-| <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) | 1.14.0 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>3.39 |
 
 ## Modules

@@ -1,0 +1,66 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "For_each": {
+        "actions": {
+          "Create_blob_(V2)": {
+            "inputs": {
+              "body": "@{items('For_each')?['array']}",
+              "headers": {
+                "ReadFileMetadataFromServer": true
+              },
+              "host": {
+                "connection": {
+                  "referenceName": "azureblob"
+                }
+              },
+              "method": "post",
+              "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('adltitnb65160st'))}/files",
+              "queries": {
+                "folderPath": "audit-logs",
+                "name": "@{concat('record/', formatDateTime(utcNow(), 'yyyy/MM/dd/HH/mm/'),guid(), '.json')}",
+                "queryParametersSingleEncoded": true
+              }
+            },
+            "runtimeConfiguration": {
+              "contentTransfer": {
+                "transferMode": "Chunked"
+              }
+            },
+            "type": "ApiConnection"
+          }
+        },
+        "foreach": "@triggerBody()?['ContentData']",
+        "runAfter": {},
+        "type": "Foreach"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_events_are_available_in_Event_Hub": {
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "eventhubs"
+            }
+          },
+          "method": "get",
+          "path": "/@{encodeURIComponent('audit-logs-filtered')}/events/batch/head",
+          "queries": {
+            "consumerGroupName": "audit-logs-filtered-logic-app-consumer-group",
+            "contentType": "application/json"
+          }
+        },
+        "recurrence": {
+          "frequency": "Second",
+          "interval": 1
+        },
+        "splitOn": "@triggerBody()",
+        "type": "ApiConnection"
+      }
+    }
+  },
+  "kind": "Stateful"
+}
