@@ -35,8 +35,8 @@ resource "azurerm_logic_app_standard" "logic_app" {
     WORKFLOWS_SUBSCRIPTION_ID                  = data.azurerm_subscription.current.subscription_id
     WORKFLOWS_LOCATION                         = var.location
     WORKFLOWS_RESOURCE_GROUP_NAME              = var.resource_group_name
-    WORKFLOWS_EVENTHUBS_CONNECTION_RUNTIME_URL = ""
-    WORKFLOWS_AZUREBLOB_CONNECTION_RUNTIME_URL = ""
+    WORKFLOWS_EVENTHUBS_CONNECTION_RUNTIME_URL = jsondecode(azurerm_resource_group_template_deployment.logic_app_eventub_connection.output_content).connectionRuntimeUrl.value
+    WORKFLOWS_AZUREBLOB_CONNECTION_RUNTIME_URL = jsondecode(azurerm_resource_group_template_deployment.logic_app_blob_connection.output_content).connectionRuntimeUrl.value
   }
 
   https_only = true
@@ -114,10 +114,6 @@ resource "azurerm_resource_group_template_deployment" "logic_app_blob_connection
     location            = var.location
     }
   )
-}
-
-output "test" {
-  value = azurerm_resource_group_template_deployment.logic_app_blob_connection.output_content
 }
 
 resource "azurerm_resource_group_template_deployment" "logic_app_blob_connection_access_policy" {
