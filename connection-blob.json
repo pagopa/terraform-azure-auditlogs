@@ -35,7 +35,7 @@
   ],
   "outputs": {
     "connectionRuntimeUrl": {
-      "type": "string",
+      "type": "String",
       "value": "[reference('/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Web/connections/${name}').connectionRuntimeUrl]"
     }
   }
