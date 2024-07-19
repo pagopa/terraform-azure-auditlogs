@@ -64,4 +64,3 @@ jobs:
           file: Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=min
-          platforms: linux/amd64,linux/arm64
