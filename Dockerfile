@@ -4,3 +4,4 @@ ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     FUNCTIONS_V2_COMPATIBILITY_MODE=true
 COPY ./archive-audit-logs /home/site/wwwroot
 RUN cd /home/site/wwwroot
+
