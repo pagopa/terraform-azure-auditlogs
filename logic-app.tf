@@ -131,3 +131,27 @@ resource "azurerm_resource_group_template_deployment" "logic_app_blob_connection
     }
   )
 }
+
+resource "null_resource" "logic_app_deploy_" {
+  depends_on = [azurerm_logic_app_standard.logic_app]
+
+  triggers = {
+    deploy_version       = "1.1" # change me to redeploy
+    logic_app_name       = azurerm_logic_app_standard.logic_app.name
+    resource_group_name  = var.resource_group_name
+    subscription_name    = data.azurerm_subscription.current.display_name
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      rm -rf archive-audit-logs.zip && \
+      cd archive-audit-logs && \
+      zip -r archive-audit-logs.zip ./* && \
+      mv  archive-audit-logs.zip ../ && \
+      sleep 180 && \
+      cd ../ && \
+      az logicapp deployment source config-zip --name ${self.triggers.logic_app_name} --resource-group ${self.triggers.resource_group_name} --subscription ${self.triggers.subscription_name} --src archive-audit-logs.zip
+    EOT
+  }
+  
+}
