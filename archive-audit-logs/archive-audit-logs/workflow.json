@@ -16,7 +16,7 @@
                 }
               },
               "method": "post",
-              "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('adltitnb65160st'))}/files",
+              "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(appsetting('WORKFLOWS_STORAGE_ACCOUNT_AUDIT_LOGS')))}/files",
               "queries": {
                 "folderPath": "audit-logs",
                 "name": "@{concat('record/', formatDateTime(utcNow(), 'yyyy/MM/dd/HH/mm/'),guid(), '.json')}",
