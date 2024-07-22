@@ -17,6 +17,7 @@ resource "azurerm_service_plan" "logic_app" {
 
   sku_name = var.logic_app.plan_size
   os_type  = "Windows"
+  # os_type = "Linux"
 
   tags = var.tags
 }
@@ -37,12 +38,15 @@ resource "azurerm_logic_app_standard" "logic_app" {
     WORKFLOWS_RESOURCE_GROUP_NAME              = var.resource_group_name
     WORKFLOWS_EVENTHUBS_CONNECTION_RUNTIME_URL = jsondecode(azurerm_resource_group_template_deployment.logic_app_eventub_connection.output_content).connectionRuntimeUrl.value
     WORKFLOWS_AZUREBLOB_CONNECTION_RUNTIME_URL = jsondecode(azurerm_resource_group_template_deployment.logic_app_blob_connection.output_content).connectionRuntimeUrl.value
+    "Runtime.FlowMaintenanceJob.RetentionCooldownInterval" = "01.00:00:00"
+    "Workflows.RuntimeConfiguration.RetentionInDays" = "30"
   }
 
   https_only = true
   version    = "~4"
   site_config {
     use_32_bit_worker_process = false
+    # linux_fx_version = "DOCKER|ghcr.io/pagopa/terraform-azure-auditlogs:beta-solution-logic-app-archive"
   }
 
   identity {
@@ -132,26 +136,25 @@ resource "azurerm_resource_group_template_deployment" "logic_app_blob_connection
   )
 }
 
-resource "null_resource" "logic_app_deploy_" {
-  depends_on = [azurerm_logic_app_standard.logic_app]
+# resource "null_resource" "logic_app_deploy_" {
+#   depends_on = [azurerm_logic_app_standard.logic_app]
 
-  triggers = {
-    deploy_version       = "1.1" # change me to redeploy
-    logic_app_name       = azurerm_logic_app_standard.logic_app.name
-    resource_group_name  = var.resource_group_name
-    subscription_name    = data.azurerm_subscription.current.display_name
-  }
+#   triggers = {
+#     deploy_version       = "1.1" # change me to redeploy
+#     logic_app_name       = azurerm_logic_app_standard.logic_app.name
+#     resource_group_name  = var.resource_group_name
+#     subscription_name    = data.azurerm_subscription.current.display_name
+#   }
 
-  provisioner "local-exec" {
-    command = <<EOT
-      rm -rf archive-audit-logs.zip && \
-      cd archive-audit-logs && \
-      zip -r archive-audit-logs.zip ./* && \
-      mv  archive-audit-logs.zip ../ && \
-      sleep 180 && \
-      cd ../ && \
-      az logicapp deployment source config-zip --name ${self.triggers.logic_app_name} --resource-group ${self.triggers.resource_group_name} --subscription ${self.triggers.subscription_name} --src archive-audit-logs.zip
-    EOT
-  }
-  
-}
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       rm -rf archive-audit-logs.zip && \
+#       cd archive-audit-logs && \
+#       zip -r archive-audit-logs.zip ./* && \
+#       mv  archive-audit-logs.zip ../ && \
+#       sleep 180 && \
+#       cd ../ && \
+#       az logicapp deployment source config-zip --name ${self.triggers.logic_app_name} --resource-group ${self.triggers.resource_group_name} --subscription ${self.triggers.subscription_name} --src archive-audit-logs.zip
+#     EOT
+#   }
+# }
