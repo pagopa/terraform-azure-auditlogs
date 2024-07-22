@@ -77,6 +77,30 @@ resource "azurerm_storage_container" "this" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_management_policy" "this" {
+  storage_account_id = azurerm_storage_account.this.id
+  rule {
+    name    = "delete_rule"
+    enabled = true
+    
+    filters {
+     blob_types = [ "blockBlob","appendBlob"]
+    }
+
+    actions {
+      version {
+         delete_after_days_since_creation = 7
+      }
+      base_blob {
+         delete_after_days_since_creation_greater_than = 7
+      }
+      snapshot {
+        delete_after_days_since_creation_greater_than = 7
+      }
+    }
+  }
+}
+
 locals {
   stream_analytics_job = {
     input_name  = "audit-logs-input"
