@@ -49,6 +49,7 @@ variable "data_explorer" {
     name         = string,
     sku_name     = string,
     sku_capacity = number,
+    script_content = optional(string, "external_table.sql")
   })
 }
 

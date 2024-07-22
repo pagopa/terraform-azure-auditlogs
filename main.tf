@@ -228,3 +228,13 @@ resource "azurerm_kusto_database" "this" {
   soft_delete_period = "P30D"
 }
 
+resource "azurerm_kusto_script" "create_external_table" {
+  name                = "create-external-table"
+  database_id         = azurerm_kusto_database.this.id
+  script_content      = templatefile("${path.module}/${var.data_explorer.script_content}", {
+    storage_account_name  = azurerm_storage_account.this.name,
+    storage_account_container_name = azurerm_storage_container.this.name
+    }
+  )
+}
+
