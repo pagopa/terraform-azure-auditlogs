@@ -271,11 +271,11 @@ resource "azurerm_role_assignment" "storage_blob_data_reader" {
 
 resource "azurerm_kusto_database_principal_assignment" "db_admin_permission" {
   for_each = var.data_explorer.admin_groups
-  name                = "admin_permissions_kusto_db"
+  name                = "Admin-Permissions-Kusto-DB-${each.key}"
   resource_group_name = var.resource_group_name
   cluster_name        = azurerm_kusto_cluster.this.name
   database_name       = azurerm_kusto_database.this.name
-  tenant_id           = data.azurerm_client_config.current.tenant_id
+  tenant_id           = var.data_explorer.tenant_id
   principal_id        = each.key
   principal_type      = "Group"
   role                = "Admin"
@@ -290,11 +290,11 @@ resource "azurerm_role_assignment" "storage_blob_data_reader_adgroup" {
 
 resource "azurerm_kusto_database_principal_assignment" "db_admin_permission_readergroup" {
   for_each = var.data_explorer.reader_groups
-  name                = "admin_permissions_kusto_db"
+  name                = "Viewer-Permissions-Kusto-DB-${each.key}"
   resource_group_name = var.resource_group_name
   cluster_name        = azurerm_kusto_cluster.this.name
   database_name       = azurerm_kusto_database.this.name
-  tenant_id           = data.azurerm_client_config.current.tenant_id
+  tenant_id           = var.data_explorer.tenant_id
   principal_id        = each.key
   principal_type      = "Group"
   role                = "Viewer"
