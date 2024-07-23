@@ -1,3 +1,25 @@
+# Azure AD
+data "azuread_group" "adgroup_admin" {
+  display_name = "dvopla-d-adgroup-admin"
+}
+
+data "azuread_group" "adgroup_developers" {
+  display_name = "dvopla-d-adgroup-developers"
+}
+
+data "azuread_group" "adgroup_operations" {
+  display_name = "dvopla-d-adgroup-operations"
+}
+
+data "azuread_group" "adgroup_security" {
+  display_name = "dvopla-d-adgroup-security"
+}
+
+data "azuread_group" "adgroup_technical_project_managers" {
+  display_name = "dvopla-d-adgroup-technical-project-managers"
+}
+
+
 resource "azurerm_resource_group" "rg" {
   name     = "${local.project}-rg"
   location = var.location
@@ -54,6 +76,8 @@ module "azure_auditlogs" {
     name         = "${local.project}-dec",
     sku_name     = "Dev(No SLA)_Standard_E2a_v4",
     sku_capacity = 1,
+    reader_groups = [data.azuread_group.adgroup_security.object_id, data.azuread_group.adgroup_operations.object_id, data.azuread_group.adgroup_technical_project_managers.object_id],
+    admin_groups  = [data.azuread_group.adgroup_admin.object_id, data.azuread_group.adgroup_developers.object_id] 
   }
 
   logic_app = {

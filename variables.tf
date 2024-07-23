@@ -50,6 +50,8 @@ variable "data_explorer" {
     sku_name     = string,
     sku_capacity = number,
     script_content = optional(string, "external_table.sql")
+    reader_groups = list(string),
+    admin_groups  = list(string)
   })
 }
 
