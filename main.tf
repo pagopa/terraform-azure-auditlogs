@@ -262,16 +262,16 @@ resource "azurerm_kusto_script" "create_external_table" {
   )
 }
 
-resource "azurerm_role_assignment" "storage_blob_data_reader" {
+resource "azurerm_role_assignment" "storage_blob_data_reader_reader" {
   for_each             = var.data_explorer.reader_groups 
   scope                = azurerm_storage_account.this.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = each.key
 }
 
-resource "azurerm_kusto_database_principal_assignment" "db_admin_permission" {
-  for_each = var.data_explorer.admin_groups
-  name                = "Admin-Permissions-Kusto-DB-${each.key}"
+resource "azurerm_kusto_database_principal_assignment" "admin" {
+  for_each            = var.data_explorer.admin_groups
+  name                = "Admin-${azurerm_kusto_database.this.name}-${each.key}"
   resource_group_name = var.resource_group_name
   cluster_name        = azurerm_kusto_cluster.this.name
   database_name       = azurerm_kusto_database.this.name
@@ -281,16 +281,16 @@ resource "azurerm_kusto_database_principal_assignment" "db_admin_permission" {
   role                = "Admin"
 }
 
-resource "azurerm_role_assignment" "storage_blob_data_reader_adgroup" {
+resource "azurerm_role_assignment" "storage_blob_data_reader_admin" {
   for_each             = var.data_explorer.admin_groups 
   scope                = azurerm_storage_account.this.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = each.key
 }
 
-resource "azurerm_kusto_database_principal_assignment" "db_admin_permission_readergroup" {
-  for_each = var.data_explorer.reader_groups
-  name                = "Viewer-Permissions-Kusto-DB-${each.key}"
+resource "azurerm_kusto_database_principal_assignment" "viewer" {
+  for_each            = var.data_explorer.reader_groups
+  name                = "Viewer-${azurerm_kusto_database.this.name}-${each.key}"
   resource_group_name = var.resource_group_name
   cluster_name        = azurerm_kusto_cluster.this.name
   database_name       = azurerm_kusto_database.this.name
