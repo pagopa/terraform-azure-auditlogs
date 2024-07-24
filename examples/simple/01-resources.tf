@@ -59,7 +59,7 @@ module "azure_auditlogs" {
 
   event_hub = {
     namespace_name           = "${local.project}-evhns",
-    maximum_throughput_units = 1
+    maximum_throughput_units = 2
   }
 
   log_analytics_workspace = {
@@ -77,8 +77,8 @@ module "azure_auditlogs" {
     sku_name     = "Dev(No SLA)_Standard_E2a_v4",
     sku_capacity = 1,
     tenant_id = data.azurerm_client_config.current.tenant_id
-    reader_groups = toset([data.azuread_group.adgroup_security.object_id, data.azuread_group.adgroup_operations.object_id, data.azuread_group.adgroup_technical_project_managers.object_id]),
-    admin_groups  = toset([data.azuread_group.adgroup_admin.object_id, data.azuread_group.adgroup_developers.object_id]) 
+    reader_groups = [data.azuread_group.adgroup_security.object_id, data.azuread_group.adgroup_operations.object_id, data.azuread_group.adgroup_technical_project_managers.object_id],
+    admin_groups  = [data.azuread_group.adgroup_admin.object_id, data.azuread_group.adgroup_developers.object_id]
   }
 
   logic_app = {

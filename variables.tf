@@ -51,8 +51,8 @@ variable "data_explorer" {
     sku_capacity = number,
     tenant_id    = string,
     script_content = optional(string, "external_table.sql"),
-    reader_groups = set(string),
-    admin_groups  = set(string)
+    reader_groups = list(string),
+    admin_groups  = list(string)
   })
 }
 
