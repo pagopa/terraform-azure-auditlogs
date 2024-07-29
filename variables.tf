@@ -25,7 +25,8 @@ variable "event_hub" {
 
 variable "storage_account" {
   type = object({
-    name                               = string,
+    name_temp                          = string,
+    name_immutable                     = string,
     account_replication_type           = optional(string, "ZRS"),
     immutability_policy_enabled        = bool,
     immutability_policy_retention_days = number,
@@ -46,22 +47,13 @@ variable "stream_analytics_job" {
 
 variable "data_explorer" {
   type = object({
-    name         = string,
-    sku_name     = string,
-    sku_capacity = number,
-    tenant_id    = string,
+    name           = string,
+    sku_name       = string,
+    sku_capacity   = number,
+    tenant_id      = string,
     script_content = optional(string, "external_table.sql"),
-    reader_groups = list(string),
-    admin_groups  = list(string)
-  })
-}
-
-variable "logic_app" {
-  type = object({
-    name                 = string,
-    storage_account_name = string,
-    plan_name            = string,
-    plan_size            = optional(string, "WS1"),
+    reader_groups  = list(string),
+    admin_groups   = list(string)
   })
 }
 

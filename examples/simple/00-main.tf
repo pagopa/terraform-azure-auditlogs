@@ -12,7 +12,7 @@ terraform {
     resource_group_name  = "terraform-state-rg"
     storage_account_name = "tfinfdevopslab"
     container_name       = "terraform-state"
-    key                  = "terraform-azure-auditlogs.b65160.terraform.tfstate"
+    key                  = "terraform-azure-auditlogs.object-replication-v2.terraform.tfstate"
   }
 }
 

@@ -37,16 +37,8 @@ resource "azurerm_eventhub" "law" {
   message_retention   = 7
 }
 
-resource "azurerm_eventhub" "filtered" {
-  name                = "audit-logs-filtered"
-  namespace_name      = azurerm_eventhub_namespace.this.name
-  resource_group_name = var.resource_group_name
-  partition_count     = 32
-  message_retention   = 7
-}
-
 resource "azurerm_storage_account" "this" {
-  name                             = var.storage_account.name
+  name                             = var.storage_account.name_temp
   resource_group_name              = var.resource_group_name
   location                         = var.location
   account_replication_type         = var.storage_account.account_replication_type
@@ -55,17 +47,18 @@ resource "azurerm_storage_account" "this" {
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
 
-  dynamic "immutability_policy" {
-    for_each = var.storage_account.immutability_policy_enabled ? ["enabled"] : []
-    content {
-      allow_protected_append_writes = true
-      period_since_creation_in_days = var.storage_account.immutability_policy_retention_days
-      state                         = "Unlocked"
-    }
-  }
+  # dynamic "immutability_policy" {
+  #   for_each = var.storage_account.immutability_policy_enabled ? ["enabled"] : []
+  #   content {
+  #     allow_protected_append_writes = true
+  #     period_since_creation_in_days = var.storage_account.immutability_policy_retention_days
+  #     state                         = "Unlocked"
+  #   }
+  # }
 
   blob_properties {
-    versioning_enabled = true
+    versioning_enabled  = true
+    change_feed_enabled = true
   }
 
   tags = var.tags
@@ -82,17 +75,17 @@ resource "azurerm_storage_management_policy" "this" {
   rule {
     name    = "delete_rule"
     enabled = true
-    
+
     filters {
-     blob_types = [ "blockBlob","appendBlob"]
+      blob_types = ["blockBlob", "appendBlob"]
     }
 
     actions {
       version {
-         delete_after_days_since_creation = 7
+        delete_after_days_since_creation = 7
       }
       base_blob {
-         delete_after_days_since_creation_greater_than = 7
+        delete_after_days_since_creation_greater_than = 7
       }
       snapshot {
         delete_after_days_since_creation_greater_than = 7
@@ -171,18 +164,20 @@ resource "azurerm_stream_analytics_stream_input_eventhub" "this" {
   }
 }
 
-resource "azurerm_stream_analytics_output_eventhub" "this" {
+resource "azurerm_stream_analytics_output_blob" "this" {
   name                      = local.stream_analytics_job.output_name
   stream_analytics_job_name = azurerm_stream_analytics_job.this.name
   resource_group_name       = var.resource_group_name
-  eventhub_name             = azurerm_eventhub.filtered.name
-  servicebus_namespace      = azurerm_eventhub_namespace.this.name
+  storage_account_name      = azurerm_storage_account.this.name
+  storage_container_name    = azurerm_storage_container.this.name
+  path_pattern              = "${azurerm_storage_container.this.name}/{date}/{time}/"
+  date_format               = "yyyy/MM/dd"
+  time_format               = "HH/mm"
   authentication_mode       = "Msi"
-
   serialization {
     type     = "Json"
     encoding = "UTF8"
-    format   = "Array"
+    format   = "LineSeparated"
   }
 }
 
@@ -192,10 +187,10 @@ resource "azurerm_stream_analytics_job_schedule" "this" {
 
   depends_on = [
     azurerm_stream_analytics_stream_input_eventhub.this,
-    azurerm_stream_analytics_output_eventhub.this,
+    azurerm_stream_analytics_output_blob.this,
     azurerm_stream_analytics_function_javascript_udf.this,
     azurerm_role_assignment.stream_analytics_azure_event_hubs_data_receiver,
-    azurerm_role_assignment.stream_analytics_azure_event_hubs_data_sender,
+    azurerm_role_assignment.stream_analytics_azure_storage_blob_data_contributor,
   ]
 
   lifecycle {
@@ -211,9 +206,9 @@ resource "azurerm_role_assignment" "stream_analytics_azure_event_hubs_data_recei
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
 
-resource "azurerm_role_assignment" "stream_analytics_azure_event_hubs_data_sender" {
-  scope                = azurerm_eventhub.filtered.id
-  role_definition_name = "Azure Event Hubs Data Sender"
+resource "azurerm_role_assignment" "stream_analytics_azure_storage_blob_data_contributor" {
+  scope                = azurerm_storage_account.this.id
+  role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
 
@@ -237,7 +232,7 @@ resource "azurerm_kusto_cluster" "this" {
 }
 
 resource "azurerm_role_assignment" "kusto_cluster_blob_reader" {
-  scope                = azurerm_storage_account.this.id
+  scope                = azurerm_storage_account.immutable.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_kusto_cluster.this.identity.0.principal_id
 }
@@ -253,18 +248,18 @@ resource "azurerm_kusto_database" "this" {
 }
 
 resource "azurerm_kusto_script" "create_external_table" {
-  name                = "create-external-table"
-  database_id         = azurerm_kusto_database.this.id
-  script_content      = templatefile("${path.module}/${var.data_explorer.script_content}", {
-    storage_account_name  = azurerm_storage_account.this.name,
-    storage_account_container_name = azurerm_storage_container.this.name
+  name        = "create-external-table"
+  database_id = azurerm_kusto_database.this.id
+  script_content = templatefile("${path.module}/${var.data_explorer.script_content}", {
+    storage_account_name           = azurerm_storage_account.immutable.name,
+    storage_account_container_name = azurerm_storage_container.immutable.name
     }
   )
 }
 
 resource "azurerm_role_assignment" "storage_blob_data_reader_reader" {
-  for_each             = toset(var.data_explorer.reader_groups) 
-  scope                = azurerm_storage_account.this.id
+  for_each             = toset(var.data_explorer.reader_groups)
+  scope                = azurerm_storage_account.immutable.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = each.key
 }
@@ -282,8 +277,8 @@ resource "azurerm_kusto_database_principal_assignment" "admin" {
 }
 
 resource "azurerm_role_assignment" "storage_blob_data_reader_admin" {
-  for_each             = toset(var.data_explorer.admin_groups) 
-  scope                = azurerm_storage_account.this.id
+  for_each             = toset(var.data_explorer.admin_groups)
+  scope                = azurerm_storage_account.immutable.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = each.key
 }
@@ -299,6 +294,3 @@ resource "azurerm_kusto_database_principal_assignment" "viewer" {
   principal_type      = "Group"
   role                = "Viewer"
 }
-
-
-

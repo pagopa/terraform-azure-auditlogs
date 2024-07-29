@@ -52,14 +52,15 @@ module "azure_auditlogs" {
   location            = var.location
 
   storage_account = {
-    name                               = replace("${local.project}st", "-", ""),
-    immutability_policy_enabled        = false,
+    name_temp                          = replace("${local.project}tmpst", "-", ""),
+    name_immutable                     = replace("${local.project}immst", "-", ""),
+    immutability_policy_enabled        = true,
     immutability_policy_retention_days = 1,
   }
 
   event_hub = {
     namespace_name           = "${local.project}-evhns",
-    maximum_throughput_units = 2
+    maximum_throughput_units = 1
   }
 
   log_analytics_workspace = {
@@ -73,18 +74,12 @@ module "azure_auditlogs" {
   }
 
   data_explorer = {
-    name         = "${local.project}-dec",
-    sku_name     = "Dev(No SLA)_Standard_E2a_v4",
-    sku_capacity = 1,
-    tenant_id = data.azurerm_client_config.current.tenant_id
+    name          = "${local.project}-dec",
+    sku_name      = "Dev(No SLA)_Standard_E2a_v4",
+    sku_capacity  = 1,
+    tenant_id     = data.azurerm_client_config.current.tenant_id
     reader_groups = [data.azuread_group.adgroup_security.object_id, data.azuread_group.adgroup_operations.object_id, data.azuread_group.adgroup_technical_project_managers.object_id],
     admin_groups  = [data.azuread_group.adgroup_admin.object_id, data.azuread_group.adgroup_developers.object_id]
-  }
-
-  logic_app = {
-    name                 = "${local.project}-logic",
-    storage_account_name = "${local.project}-logic-st",
-    plan_name            = "${local.project}-logic-asp",
   }
 
   tags = var.tags

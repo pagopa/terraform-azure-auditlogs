@@ -1,8 +1,10 @@
-WITH filteredRecords AS(
-  SELECT udf.filteredRecords(records) as array
+WITH records AS(
+  SELECT records.arrayvalue as sig
   FROM [${input_name}]
+  CROSS APPLY GetArrayElements(records) AS records
 )
 
-SELECT array
-INTO  [${output_name}]
-FROM filteredRecords
+SELECT sig.*
+INTO [${output_name}]
+FROM records
+WHERE sig.Properties.audit='true'
