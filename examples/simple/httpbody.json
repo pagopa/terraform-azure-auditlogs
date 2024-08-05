@@ -1,8 +1,8 @@
 {
   "name": "custom event log",
   "properties":{
-      "customProperty":"test-003-count100",
+      "customProperty":"test-100-count500",
       "audit":"true"
   },
-  "requestCount": 100
+  "requestCount": 500
 }
