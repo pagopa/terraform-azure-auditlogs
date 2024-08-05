@@ -73,7 +73,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_tmp_blob" {
   }
 
   metric {
-    category = "AllMetrics"
+    category = "Capacity"
+    enabled  = false
+  }
+
+  metric {
+    category = "Transaction"
     enabled  = false
   }
 }
@@ -94,7 +99,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_imm_blob" {
   }
 
   metric {
-    category = "AllMetrics"
+    category = "Capacity"
+    enabled  = false
+  }
+
+  metric {
+    category = "Transaction"
     enabled  = false
   }
 }
