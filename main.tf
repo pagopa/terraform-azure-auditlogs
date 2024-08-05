@@ -15,10 +15,9 @@ resource "azurerm_eventhub_namespace" "this" {
   name                     = var.event_hub.namespace_name
   location                 = var.location
   resource_group_name      = var.resource_group_name
-  sku                      = "Standard"
-  auto_inflate_enabled     = true
-  maximum_throughput_units = var.event_hub.maximum_throughput_units
+  sku                      = "Premium"
   zone_redundant           = true
+  local_authentication_enabled = false
 
   tags = var.tags
 
@@ -33,8 +32,8 @@ resource "azurerm_eventhub" "law" {
   name                = "audit-logs-law"
   namespace_name      = azurerm_eventhub_namespace.this.name
   resource_group_name = var.resource_group_name
-  partition_count     = 32
-  message_retention   = 7
+  partition_count     = 100
+  message_retention   = 90
 }
 
 resource "azurerm_storage_account" "this" {
