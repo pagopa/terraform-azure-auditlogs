@@ -50,7 +50,7 @@ This example is linked to this [example action](../../.github/workflows/example-
 |------|-------------|------|---------|:--------:|
 | <a name="input_location"></a> [location](#input\_location) | n/a | `string` | `"italynorth"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Resorce prefix | `string` | `"adl-t-itn"` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Audit Log Solution | `map(string)` | <pre>{<br>  "CreatedBy": "Terraform",<br>  "Description": "Support Request with Stram Analytics and Immutability"<br>}</pre> | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Audit Log Solution | `map(string)` | <pre>{<br>  "CreatedBy": "Terraform",<br>  "Description": "Test with object replication"<br>}</pre> | no |
 
 ## Outputs
 

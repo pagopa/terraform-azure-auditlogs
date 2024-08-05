@@ -12,11 +12,11 @@ resource "azurerm_log_analytics_data_export_rule" "this" {
 }
 
 resource "azurerm_eventhub_namespace" "this" {
-  name                     = var.event_hub.namespace_name
-  location                 = var.location
-  resource_group_name      = var.resource_group_name
-  sku                      = "Premium"
-  zone_redundant           = true
+  name                         = var.event_hub.namespace_name
+  location                     = var.location
+  resource_group_name          = var.resource_group_name
+  sku                          = "Premium"
+  zone_redundant               = true
   local_authentication_enabled = false
 
   tags = var.tags

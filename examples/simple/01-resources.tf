@@ -50,6 +50,7 @@ module "azure_auditlogs" {
   source              = "../.."
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
+  debug               = true
 
   storage_account = {
     name_temp                          = replace("${local.project}tmpst", "-", ""),
