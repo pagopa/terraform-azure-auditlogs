@@ -93,7 +93,7 @@ module "azure_auditlogs" {
 
   event_hub = {
     namespace_name = "${local.project}-evhns",
-    sku_name       = "Premium",
+    sku_name       = "Standard",
   }
 
   log_analytics_workspace = {
