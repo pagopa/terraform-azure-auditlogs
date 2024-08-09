@@ -57,11 +57,11 @@ resource "azurerm_monitor_diagnostic_setting" "stream_analytics" {
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "storage_tmp_blob" {
+resource "azurerm_monitor_diagnostic_setting" "storage_temp_blob" {
   count = var.debug ? 1 : 0
 
   name                       = "debug"
-  target_resource_id         = "${azurerm_storage_account.this.id}/blobServices/default/"
+  target_resource_id         = "${azurerm_storage_account.temp.id}/blobServices/default/"
   log_analytics_workspace_id = var.log_analytics_workspace.id
 
   enabled_log {
@@ -83,7 +83,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_tmp_blob" {
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "storage_imm_blob" {
+resource "azurerm_monitor_diagnostic_setting" "storage_immutable_blob" {
   count = var.debug ? 1 : 0
 
   name                       = "debug"
