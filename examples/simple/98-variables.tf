@@ -8,7 +8,7 @@ variable "tags" {
   description = "Audit Log Solution"
   default = {
     CreatedBy   = "Terraform"
-    Description = "Support Request with Stram Analytics and Immutability"
+    Description = "Test with object replication"
   }
 }
 
