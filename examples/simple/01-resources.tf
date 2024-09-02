@@ -77,10 +77,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_privatelink_blob_
 }
 
 module "azure_auditlogs" {
+  depends_on = [azurerm_private_dns_zone.privatelink_blob_core_windows_net] # only for test env
+
   source                     = "../.."
   resource_group_name        = azurerm_resource_group.rg.name
   location                   = var.location
-  debug                      = false
+  debug                      = true # true only for test use
   subnet_private_endpoint_id = azurerm_subnet.private_endpoint.id
 
   storage_account = {
@@ -88,7 +90,7 @@ module "azure_auditlogs" {
     name_immutable                     = replace("${local.project}immst", "-", ""),
     immutability_policy_enabled        = true,
     immutability_policy_retention_days = 1,
-    immutability_policy_state          = "Unlocked" # change to Locked after first apply
+    immutability_policy_state          = "Unlocked", # change to Locked after first apply
   }
 
   event_hub = {
@@ -102,7 +104,7 @@ module "azure_auditlogs" {
   }
 
   stream_analytics_job = {
-    name            = "${local.project}-job"
+    name            = "${local.project}-job",
     streaming_units = 10,
   }
 

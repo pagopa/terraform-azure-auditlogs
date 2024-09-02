@@ -75,3 +75,39 @@ resource "azurerm_kusto_cluster_managed_private_endpoint" "this" {
   private_link_resource_region = azurerm_storage_account.immutable.location
   group_id                     = "blob"
 }
+
+# Retrieve the storage account details, including the private endpoint connections
+data "azapi_resource" "immutable" {
+  depends_on = [azurerm_kusto_cluster_managed_private_endpoint.this]
+
+  type                   = "Microsoft.Storage/storageAccounts@2022-09-01"
+  resource_id            = azurerm_storage_account.immutable.id
+  response_export_values = ["properties.privateEndpointConnections"]
+}
+
+# Retrieve the private endpoint connection name from the storage account based on the private endpoint name
+locals {
+  private_endpoint_connection_name = element([
+    for connection in jsondecode(data.azapi_resource.immutable.output).properties.privateEndpointConnections
+    : connection.name
+    if endswith(connection.properties.privateEndpoint.id, azurerm_kusto_cluster_managed_private_endpoint.this.name)
+  ], 0)
+}
+
+# Approve the private endpoint
+resource "azapi_update_resource" "immutable_approval" {
+  depends_on = [azurerm_kusto_cluster_managed_private_endpoint.this]
+
+  type      = "Microsoft.Storage/storageAccounts/privateEndpointConnections@2022-09-01"
+  name      = local.private_endpoint_connection_name
+  parent_id = azurerm_storage_account.immutable.id
+
+  body = jsonencode({
+    properties = {
+      privateLinkServiceConnectionState = {
+        description = "Approved via Terraform"
+        status      = "Approved"
+      }
+    }
+  })
+}
