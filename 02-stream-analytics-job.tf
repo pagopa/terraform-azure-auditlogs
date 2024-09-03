@@ -98,3 +98,118 @@ resource "azurerm_role_assignment" "stream_analytics_azure_storage_blob_data_con
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_stream_analytics_job.this.identity.0.principal_id
 }
+
+resource "azurerm_monitor_autoscale_setting" "azurerm_stream_analytics_job" {
+  name                = "${var.stream_analytics_job.name}-autoscale"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  target_resource_id  = azurerm_stream_analytics_job.this.id
+
+  profile {
+    name = "default"
+
+    capacity {
+      default = 80
+      minimum = 3
+      maximum = 320
+    }
+
+    rule {
+      metric_trigger {
+        metric_name              = "ProcessCPUUsagePercentage"
+        metric_resource_id       = azurerm_stream_analytics_job.this.id
+        metric_namespace         = "microsoft.streamanalytics/streamingjobs"
+        time_grain               = "PT1M"
+        statistic                = "Average"
+        time_window              = "PT10M"
+        time_aggregation         = "Average"
+        operator                 = "GreaterThan"
+        threshold                = 40
+        divide_by_instance_count = false
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ServiceAllowedNextValue"
+        value     = "1"
+        cooldown  = "PT5M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name              = "ProcessCPUUsagePercentage"
+        metric_resource_id       = azurerm_stream_analytics_job.this.id
+        metric_namespace         = "microsoft.streamanalytics/streamingjobs"
+        time_grain               = "PT1M"
+        statistic                = "Average"
+        time_window              = "PT10M"
+        time_aggregation         = "Average"
+        operator                 = "LessThan"
+        threshold                = 10
+        divide_by_instance_count = false
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ServiceAllowedNextValue"
+        value     = "1"
+        cooldown  = "PT5M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name              = "ResourceUtilization"
+        metric_resource_id       = azurerm_stream_analytics_job.this.id
+        metric_namespace         = "microsoft.streamanalytics/streamingjobs"
+        time_grain               = "PT1M"
+        statistic                = "Average"
+        time_window              = "PT10M"
+        time_aggregation         = "Average"
+        operator                 = "GreaterThan"
+        threshold                = 40
+        divide_by_instance_count = false
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ServiceAllowedNextValue"
+        value     = "1"
+        cooldown  = "PT5M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name              = "ResourceUtilization"
+        metric_resource_id       = azurerm_stream_analytics_job.this.id
+        metric_namespace         = "microsoft.streamanalytics/streamingjobs"
+        time_grain               = "PT1M"
+        statistic                = "Average"
+        time_window              = "PT10M"
+        time_aggregation         = "Average"
+        operator                 = "LessThan"
+        threshold                = 10
+        divide_by_instance_count = false
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ServiceAllowedNextValue"
+        value     = "1"
+        cooldown  = "PT5M"
+      }
+    }
+  }
+
+  notification {
+    email {
+      custom_emails                         = []
+      send_to_subscription_administrator    = false
+      send_to_subscription_co_administrator = false
+    }
+  }
+
+  tags = var.tags
+}
