@@ -16,7 +16,7 @@ resource "azurerm_stream_analytics_job" "this" {
   events_out_of_order_max_delay_in_seconds = 599 # from Azure UI max value is 3599, but terraform supports max 599
   events_out_of_order_policy               = "Adjust"
   output_error_policy                      = "Stop"
-  streaming_units                          = var.stream_analytics_job.streaming_units
+  streaming_units                          = 10
   identity {
     type = "SystemAssigned"
   }

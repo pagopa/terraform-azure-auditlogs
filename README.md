@@ -68,7 +68,7 @@ No modules.
 | <a name="input_log_analytics_workspace"></a> [log\_analytics\_workspace](#input\_log\_analytics\_workspace) | n/a | <pre>object({<br>    id            = string,<br>    export_tables = list(string),<br>  })</pre> | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
 | <a name="input_storage_account"></a> [storage\_account](#input\_storage\_account) | n/a | <pre>object({<br>    name_temp                          = string,<br>    name_immutable                     = string,<br>    account_replication_type           = optional(string, "ZRS"),<br>    immutability_policy_enabled        = bool,<br>    immutability_policy_retention_days = number,<br>    immutability_policy_state          = string,<br>  })</pre> | n/a | yes |
-| <a name="input_stream_analytics_job"></a> [stream\_analytics\_job](#input\_stream\_analytics\_job) | n/a | <pre>object({<br>    name                 = string,<br>    streaming_units      = number,<br>    transformation_query = optional(string, "transformation_query.sql"),<br>  })</pre> | n/a | yes |
+| <a name="input_stream_analytics_job"></a> [stream\_analytics\_job](#input\_stream\_analytics\_job) | n/a | <pre>object({<br>    name                 = string,<br>    transformation_query = optional(string, "transformation_query.sql"),<br>  })</pre> | n/a | yes |
 | <a name="input_subnet_private_endpoint_id"></a> [subnet\_private\_endpoint\_id](#input\_subnet\_private\_endpoint\_id) | Private endpoint subnet id | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(any)` | n/a | yes |
 
