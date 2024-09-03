@@ -55,7 +55,6 @@ variable "storage_account" {
 variable "stream_analytics_job" {
   type = object({
     name                 = string,
-    streaming_units      = number,
     transformation_query = optional(string, "transformation_query.sql"),
   })
 }

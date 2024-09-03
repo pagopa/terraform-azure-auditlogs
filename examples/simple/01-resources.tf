@@ -104,8 +104,7 @@ module "azure_auditlogs" {
   }
 
   stream_analytics_job = {
-    name            = "${local.project}-job",
-    streaming_units = 10,
+    name = "${local.project}-job",
   }
 
   data_explorer = {
