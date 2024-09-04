@@ -1,4 +1,63 @@
-# terraform-azure-auditlogs<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+# terraform-azure-auditlogs
+
+This repository contains a Terraform module and an example for deploying resources needed to store audit logs in a Azure cloud environment. The module is designed to be flexible and scalable, allowing you to securely store and manage audit logs in accordance with your organization's compliance and security requirements.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Usage](#usage)
+  - [Module Usage](#module-usage)
+  - [Example Deployment](#example-deployment)
+
+## Overview
+
+The Terraform module in this repository provisions the necessary resources for storing audit logs, such as storage account, data export, and logging configurations. The example included demonstrates how to utilize the module in a typical deployment scenario.
+
+Audit log module is based on export logs from Log Analytics Workspace and store them into an immutable storage, as explained into Microsoft docs https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-data-export?tabs=portal#overview
+
+We use Stream Analytics Job to store only audit logs and Data Explorer to search logs into storage account with immutability policy enabled.
+
+
+## Features
+
+- Provisioning of storage resources optimized for audit logs
+- Configurable retention policies for compliance
+- Easily integratable with existing Terraform infrastructure
+
+## Prerequisites
+
+Before using this module, ensure that you have the following:
+
+- Access to Azure Cloud
+- Azure CLI
+- Terraform installed on your local machine
+
+## Usage
+
+### Module Usage
+
+To use this module in your Terraform configuration, refer to **examples/simple** folder witch contains all you need.
+
+See 02-module.tf file that contains example usage for the module.
+
+For production environment you need:
+
+- set `debug` variable to `false`. This variable enable diagnostic settings and disable network policy, so for production use you myst set to `false`
+- set `storage_account.immutability_policy_retention_days` to to required retention (there is also a lifecycle policy to delete logs after 7 days of required retention)
+- set `storage_account.immutability_policy_state` to `Locked` after first apply
+
+### Example Deployment
+
+- backend.ini contains the default subscription
+- 01-resources.tf file contains all resources used by the the module
+- 02-module.tf file contains the module usage for a test env
+- 03-test.tf contains load test environment (function app and logic app to generate sample logs)
+
+Run `./terraform apply` to create entire environment.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
