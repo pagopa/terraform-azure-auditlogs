@@ -42,7 +42,7 @@ variable "storage_account" {
     name_temp                          = string,
     name_immutable                     = string,
     account_replication_type           = optional(string, "ZRS"),
-    immutability_policy_enabled        = bool,
+    immutability_policy_enabled        = optional(bool, true),
     immutability_policy_retention_days = number,
     immutability_policy_state          = string,
   })

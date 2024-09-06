@@ -10,7 +10,6 @@ module "azure_auditlogs" {
   storage_account = {
     name_temp                          = replace("${local.project}tmpst", "-", ""),
     name_immutable                     = replace("${local.project}immst", "-", ""),
-    immutability_policy_enabled        = true,
     immutability_policy_retention_days = 1,          # change to required retention
     immutability_policy_state          = "Unlocked", # change to Locked after first apply
   }
