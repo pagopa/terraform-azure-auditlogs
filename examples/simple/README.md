@@ -1,10 +1,3 @@
-# terraform-aws-runner: Simple example
-
-Minimal simple example of module usage.
-It creates a VPC, a GitHub runner in that VPC, permissions for the runner to list S3 buckets.
-
-This example is linked to this [example action](../../.github/workflows/example-simple.yml) provided in this repository.
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
