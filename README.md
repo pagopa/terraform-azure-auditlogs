@@ -48,6 +48,23 @@ For production environment you need:
 - set `storage_account.immutability_policy_retention_days` to to required retention (there is also a lifecycle policy to delete logs after 7 days of required retention)
 - set `storage_account.immutability_policy_state` to `Locked` after first apply
 
+---
+## Repository Structure & Details (Auto-generated)
+
+### Scopo
+Implementa la pipeline di acquisizione e trasformazione dei log di audit Azure (Event Hub/Storage verso Azure Data Explorer) per compliance e security analytics, con schema/table esterni e query KQL dedicate.
+
+### Cartelle
+- `main.tf` e `*.tf`: Event Hub, Storage Account con retention, Data Explorer/Database, autorizzazioni.
+- `external_table.sql`: definizione tabella esterna ADX per i log grezzi.
+- `transformation_query.sql`: query KQL di parsing/normalizzazione per consumo analytics.
+
+### Script
+Nessuno (solo query/infra).
+
+### Note
+Aggiornare le query KQL quando cambia il formato dei log.
+
 ### Example Deployment
 
 - backend.ini contains the default subscription
