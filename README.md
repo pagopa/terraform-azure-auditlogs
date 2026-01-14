@@ -81,7 +81,7 @@ Run `./terraform apply` to create entire environment.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) | ~>1.15 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>3.39 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>4.0 |
 
 ## Modules
 
@@ -137,14 +137,14 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_data_explorer"></a> [data\_explorer](#input\_data\_explorer) | n/a | <pre>object({<br>    name           = string,<br>    sku_name       = string,<br>    sku_capacity   = number,<br>    script_content = optional(string, "external_table.sql"),<br>    reader_groups  = list(string),<br>    admin_groups   = list(string)<br>  })</pre> | n/a | yes |
+| <a name="input_data_explorer"></a> [data\_explorer](#input\_data\_explorer) | n/a | <pre>object({<br/>    name           = string,<br/>    sku_name       = string,<br/>    sku_capacity   = number,<br/>    script_content = optional(string, "external_table.sql"),<br/>    reader_groups  = list(string),<br/>    admin_groups   = list(string)<br/>  })</pre> | n/a | yes |
 | <a name="input_debug"></a> [debug](#input\_debug) | n/a | `bool` | `false` | no |
-| <a name="input_event_hub"></a> [event\_hub](#input\_event\_hub) | n/a | <pre>object({<br>    namespace_name = string,<br>    sku_name       = optional(string, "Standard"),<br>  })</pre> | n/a | yes |
+| <a name="input_event_hub"></a> [event\_hub](#input\_event\_hub) | n/a | <pre>object({<br/>    namespace_name = string,<br/>    sku_name       = optional(string, "Standard"),<br/>  })</pre> | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. | `string` | n/a | yes |
-| <a name="input_log_analytics_workspace"></a> [log\_analytics\_workspace](#input\_log\_analytics\_workspace) | n/a | <pre>object({<br>    id            = string,<br>    export_tables = list(string),<br>  })</pre> | n/a | yes |
+| <a name="input_log_analytics_workspace"></a> [log\_analytics\_workspace](#input\_log\_analytics\_workspace) | n/a | <pre>object({<br/>    id            = string,<br/>    export_tables = list(string),<br/>  })</pre> | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
-| <a name="input_storage_account"></a> [storage\_account](#input\_storage\_account) | n/a | <pre>object({<br>    name_temp                          = string,<br>    name_immutable                     = string,<br>    account_replication_type           = optional(string, "ZRS"),<br>    immutability_policy_enabled        = bool,<br>    immutability_policy_retention_days = number,<br>    immutability_policy_state          = string,<br>  })</pre> | n/a | yes |
-| <a name="input_stream_analytics_job"></a> [stream\_analytics\_job](#input\_stream\_analytics\_job) | n/a | <pre>object({<br>    name                 = string,<br>    transformation_query = optional(string, "transformation_query.sql"),<br>  })</pre> | n/a | yes |
+| <a name="input_storage_account"></a> [storage\_account](#input\_storage\_account) | n/a | <pre>object({<br/>    name_temp                          = string,<br/>    name_immutable                     = string,<br/>    account_replication_type           = optional(string, "ZRS"),<br/>    immutability_policy_enabled        = optional(bool, true),<br/>    immutability_policy_retention_days = number,<br/>    immutability_policy_state          = string,<br/>  })</pre> | n/a | yes |
+| <a name="input_stream_analytics_job"></a> [stream\_analytics\_job](#input\_stream\_analytics\_job) | n/a | <pre>object({<br/>    name                 = string,<br/>    transformation_query = optional(string, "transformation_query.sql"),<br/>  })</pre> | n/a | yes |
 | <a name="input_subnet_private_endpoint_id"></a> [subnet\_private\_endpoint\_id](#input\_subnet\_private\_endpoint\_id) | Private endpoint subnet id | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(any)` | n/a | yes |
 

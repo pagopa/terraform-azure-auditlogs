@@ -3,7 +3,6 @@ resource "azurerm_eventhub_namespace" "this" {
   location                      = var.location
   resource_group_name           = var.resource_group_name
   sku                           = var.event_hub.sku_name
-  zone_redundant                = true
   local_authentication_enabled  = false
   minimum_tls_version           = "1.2"
   auto_inflate_enabled          = var.event_hub.sku_name == "Standard" ? true : null
