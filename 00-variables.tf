@@ -26,6 +26,11 @@ variable "log_analytics_workspace" {
   })
 }
 
+variable "log_analytics_workspace_rg_name" {
+  type        = string
+  description = "The name of the resource group of log analytics workspace"
+}
+
 variable "event_hub" {
   type = object({
     namespace_name = string,
