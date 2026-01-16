@@ -22,13 +22,9 @@ variable "subnet_private_endpoint_id" {
 variable "log_analytics_workspace" {
   type = object({
     id            = string,
+    rg_name       = string,
     export_tables = list(string),
   })
-}
-
-variable "log_analytics_workspace_rg_name" {
-  type        = string
-  description = "The name of the resource group of log analytics workspace"
 }
 
 variable "event_hub" {
