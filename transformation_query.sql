@@ -7,4 +7,4 @@ WITH records AS(
 SELECT sig.*
 INTO [${output_name}]
 FROM records
-WHERE sig.LogEntry.audit='true'
+WHERE sig.Properties.audit='true'
